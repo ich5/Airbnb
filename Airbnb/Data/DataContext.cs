@@ -145,6 +145,18 @@ namespace Airbnb.Data
                 deleteBookingsCmd.Parameters.AddWithValue("@id", id);
                 deleteBookingsCmd.ExecuteNonQuery();
 
+                // Delete related campingspace amenities
+                var deleteCampingspaceAmenitiesCmd = new MySqlCommand(
+                    "DELETE FROM campingspace_amenities WHERE campingspace_id IN (SELECT campingspace_id FROM campingspace WHERE owner_id = @id)",
+                    connection);
+                deleteCampingspaceAmenitiesCmd.Parameters.AddWithValue("@id", id);
+                deleteCampingspaceAmenitiesCmd.ExecuteNonQuery();
+
+                // Delete related campingspaces
+                var deleteCampingspacesCmd = new MySqlCommand("DELETE FROM campingspace WHERE owner_id = @id", connection);
+                deleteCampingspacesCmd.Parameters.AddWithValue("@id", id);
+                deleteCampingspacesCmd.ExecuteNonQuery();
+
                 // Finally, delete the user
                 var deleteUserCmd = new MySqlCommand("DELETE FROM user WHERE user_id = @id", connection);
                 deleteUserCmd.Parameters.AddWithValue("@id", id);
